@@ -50,7 +50,7 @@ Si en la consola de Windows ves caracteres raros en lugar de tildes (por ejemplo
 | No confirmar        | `n`                                                                       |
 | Salir antes del resumen | `cancelar` (sin fila en `solicitudes.csv`)                            |
 | Salir en el resumen | `cancelar` o `n` (registra `CANCELADA` en `solicitudes.csv`)              |
-| Errores repetidos   | Tras **3 intentos fallidos** en el mismo paso, el bot cierra la solicitud |
+| Errores repetidos   | Tras **3 intentos fallidos** en el mismo paso, el bot cierra la solicitud (sin fila en CSV si fue antes del resumen) |
 
 ### Reglas de negocio
 
@@ -126,11 +126,12 @@ Tras confirmar con `s`, cada cierre por reglas de negocio o con `n`/`cancelar` e
 
 ## Documentación del proyecto
 
-| Documento                                              | Para qué sirve                                                    |
-| ------------------------------------------------------ | ----------------------------------------------------------------- |
-| [docs/manual-usuario.md](docs/manual-usuario.md)       | Manual de usuario completo del bot                                |
-| [docs/diccionario-datos.md](docs/diccionario-datos.md) | Diccionario de datos (entidades, variables, estados)              |
-| [docs/pruebas-estres.md](docs/pruebas-estres.md)       | Pruebas de estrés, caminos alternativos y capturas en `docs/img/test/` |
+| Documento | Para qué sirve |
+| --------- | -------------- |
+| [OE_TPI_AutomatizacionProceso_LeandroTraficante.pdf](OE_TPI_AutomatizacionProceso_LeandroTraficante.pdf) | Informe del TPI (BPMN, implementación, pruebas, uso de IA) |
+| [docs/manual-usuario.md](docs/manual-usuario.md) | Manual de usuario completo del bot |
+| [docs/diccionario-datos.md](docs/diccionario-datos.md) | Diccionario de datos (entidades, variables, estados) |
+| [docs/pruebas-estres.md](docs/pruebas-estres.md) | Pruebas de estrés, caminos alternativos y capturas en `docs/img/test/` |
 
 ## Diagramas BPMN
 
@@ -148,6 +149,7 @@ Tras confirmar con `s`, cada cierre por reglas de negocio o con `n`/`cancelar` e
 
 ```
 ├── README.md
+├── OE_TPI_AutomatizacionProceso_LeandroTraficante.pdf   # Informe TPI
 ├── docs/
 │   ├── manual-usuario.md
 │   ├── diccionario-datos.md
@@ -169,8 +171,7 @@ Tras confirmar con `s`, cada cierre por reglas de negocio o con `n`/`cancelar` e
 ## Repositorio
 
 - **GitHub:** https://github.com/leandrotraficante/OE_TPI_AutomatizacionProceso
-
-El informe PDF del TPI (BPMN, pruebas, uso de IA) se entrega por el aula virtual de la materia.
+- **Informe PDF:** [OE_TPI_AutomatizacionProceso_LeandroTraficante.pdf](OE_TPI_AutomatizacionProceso_LeandroTraficante.pdf) (también en el aula virtual de la materia, según indicaciones de cátedra)
 
 ---
 
