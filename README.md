@@ -152,14 +152,14 @@ Cada solicitud confirmada o rechazada por reglas de negocio genera una fila con 
 │   ├── pruebas-estres.md
 │   └── img/
 │       ├── proceso_as_is.png
-│       └── proceso_bot_to_be.png
+│       ├── proceso_bot_to_be.png
+│       └── test/              # Capturas de pruebas (ver pruebas-estres.md)
 ├── src/
-│   └── bot_vacaciones.py    # Bot Jack + máquina de estados
+│   └── bot_vacaciones.py
 ├── data/
 │   ├── empleados.csv
 │   ├── blackout.csv
 │   └── solicitudes.csv
-└── capturas_IA/             # Capturas para informe e IA (crear al entregar)
 ```
 
 ---
@@ -167,8 +167,7 @@ Cada solicitud confirmada o rechazada por reglas de negocio genera una fila con 
 ## Repositorio e informe
 
 - **GitHub:** https://github.com/leandrotraficante/OE_TPI_AutomatizacionProceso
-- **Informe PDF (TPI):** entregar en el aula virtual (Moodle) según indicaciones de cátedra
-- **Uso de IA (capturas):** carpeta `capturas_IA/` (agregar capturas antes de la entrega)
+- **Informe PDF (TPI):** entregar en el aula virtual (Moodle) según indicaciones de cátedra (incluye capturas de pruebas e IA)
 
 ---
 

@@ -55,8 +55,9 @@ Jack te guía paso a paso. Solo escribís y presionás **Enter**.
 
 | Comando | Cuándo usarlo | Qué hace |
 |---------|---------------|----------|
-| `cancelar` | En cualquier momento | Sale del proceso sin guardar |
-| `n` | En la pregunta final de confirmación | No registra los días y termina |
+| `cancelar` | Antes del resumen | Sale del proceso sin fila en `solicitudes.csv` |
+| `cancelar` | En la confirmación del resumen | Igual que `n`: registra `CANCELADA` en `solicitudes.csv` |
+| `n` | En la confirmación del resumen | Registra `CANCELADA` y termina |
 | `s` | En la pregunta final de confirmación | Confirma y dispara la validación de reglas |
 
 ---
@@ -94,7 +95,7 @@ Jack es tolerante a errores:
 - Si escribís una fecha mal formateada → te explica el formato y te la pide de nuevo.
 - Si pedís 0 o un número negativo de días → te pide otro.
 
-**Tenés 3 intentos por paso.** Al cuarto error consecutivo, Jack cierra la solicitud por seguridad.
+**Tenés hasta 3 intentos fallidos por paso.** Al tercer error consecutivo, Jack cierra la solicitud.
 
 ---
 

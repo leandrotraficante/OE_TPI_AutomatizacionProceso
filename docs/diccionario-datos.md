@@ -62,7 +62,7 @@ Documento que describe **todas las entidades y variables** que maneja el bot Jac
 | `PENDIENTE_APROBACION` | Espera revisión del jefe (fuera del bot). | No |
 | `RECHAZADA_BLACKOUT` | Fechas caen en `BLACKOUT`. | No |
 | `RECHAZADA_FALTA_SALDO` | `cant_dias` > `saldo_vacaciones`. | No |
-| `CANCELADA` | Usuario respondió `n` al resumen o agotó intentos. | No |
+| `CANCELADA` | `n`/`cancelar` en resumen o 3 errores en confirmación (sí en CSV). Cancelar antes del resumen o 3 errores en legajo/fecha/días (sin CSV). | No |
 
 ---
 
@@ -116,7 +116,7 @@ Documento que describe **todas las entidades y variables** que maneja el bot Jac
 | `FIN_PENDIENTE_APROBACION` | `PENDIENTE_APROBACION` |
 | `FIN_RECHAZADA_BLACKOUT` | `RECHAZADA_BLACKOUT` |
 | `FIN_RECHAZADA_SALDO` | `RECHAZADA_FALTA_SALDO` |
-| `FIN_CANCELADA` | `CANCELADA` (si llegó al resumen) |
+| `FIN_CANCELADA` | `CANCELADA` (con o sin fila en CSV según el paso) |
 
 ---
 
