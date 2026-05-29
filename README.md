@@ -124,10 +124,10 @@ Cada solicitud confirmada o rechazada por reglas de negocio genera una fila con 
 
 ## Documentación del proyecto
 
-| Documento                                              | Para qué sirve                                       |
-| ------------------------------------------------------ | ---------------------------------------------------- |
-| [docs/manual-usuario.md](docs/manual-usuario.md)       | Manual de usuario completo del bot                   |
-| [docs/diccionario-datos.md](docs/diccionario-datos.md) | Diccionario de datos (entidades, variables, estados) |
+| Documento                                              | Para qué sirve                                                    |
+| ------------------------------------------------------ | ----------------------------------------------------------------- |
+| [docs/manual-usuario.md](docs/manual-usuario.md)       | Manual de usuario completo del bot                                |
+| [docs/diccionario-datos.md](docs/diccionario-datos.md) | Diccionario de datos (entidades, variables, estados)              |
 | [docs/pruebas-estres.md](docs/pruebas-estres.md)       | Pruebas de estrés y caminos infelices (tabla entrada → resultado) |
 
 ## Diagramas BPMN
@@ -169,30 +169,6 @@ Cada solicitud confirmada o rechazada por reglas de negocio genera una fila con 
 - **GitHub:** https://github.com/leandrotraficante/OE_TPI_AutomatizacionProceso
 - **Informe PDF (TPI):** entregar en el aula virtual (Moodle) según indicaciones de cátedra
 - **Uso de IA (capturas):** carpeta `capturas_IA/` (agregar capturas antes de la entrega)
-
-### Subir el proyecto a GitHub (primera vez)
-
-Desde la raíz del proyecto, en PowerShell o Git Bash:
-
-```bash
-git init
-git add .
-git status
-git commit -m "TPI OE: bot Jack, documentación y diagramas BPMN"
-git branch -M main
-git remote add origin https://github.com/leandrotraficante/OE_TPI_AutomatizacionProceso.git
-git push -u origin main
-```
-
-`git status` debe **no** listar `consignas.txt`, `informe-manual-usuario.md`, `informe-diccionario-datos.md` ni archivos `.drawio` (están en `.gitignore`).
-
-Si el remoto ya existe y solo querés actualizar:
-
-```bash
-git add .
-git commit -m "Actualización documentación y pruebas"
-git push
-```
 
 ---
 

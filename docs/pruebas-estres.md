@@ -1,102 +1,122 @@
-# Pruebas de estrés y caminos infelices — Bot Jack
+# Pruebas de estrés y validación de caminos alternativos
 
-Documento de verificación manual del simulador. Cada caso indica **entrada**, **pasos** y **resultado esperado** según `src/bot_vacaciones.py`.
+## 1. Objetivo y alcance
 
-**Cómo ejecutar:** desde la raíz del proyecto, `python src/bot_vacaciones.py` (o `py` en Windows).
+El presente documento registra la verificación manual del simulador **Jack** (`src/bot_vacaciones.py`). Para cada escenario se consigna la secuencia de entrada, el resultado esperado conforme a las reglas de negocio implementadas y la persistencia en los archivos CSV.
 
-**Datos de referencia** (`data/empleados.csv` al momento de documentar):
+**Procedimiento de ejecución:** desde la raíz del proyecto, ejecutar `python src/bot_vacaciones.py` (en Windows, `py src/bot_vacaciones.py` si corresponde).
 
-| Legajo | Nombre | Saldo |
-|--------|--------|-------|
-| 1001 | Juan Pérez | 73 |
-| 1002 | María Gómez | 2 |
-| 1003 | Carlos López | 0 |
-| 1004 | Ana Martínez | 10 |
+**Datos de referencia** (`data/empleados.csv`):
 
-**Blackouts** (`data/blackout.csv`): 2026-07-01 a 2026-07-15; 2026-12-22 a 2027-01-05.
+| Legajo | Nombre        | Saldo (días) |
+| ------ | ------------- | ------------ |
+| 1001   | Juan Pérez    | 73           |
+| 1002   | María Gómez   | 2            |
+| 1003   | Carlos López  | 0            |
+| 1004   | Ana Martínez  | 10           |
 
-> **Para el informe PDF:** copiá las tablas que necesites y agregá **capturas de pantalla** de los casos marcados con 📷.
-
----
-
-## 1. Camino feliz (happy path)
-
-| ID | Escenario | Entrada / secuencia | Resultado esperado | ¿Persiste en `solicitudes.csv`? | 📷 |
-|----|-----------|---------------------|--------------------|----------------------------------|-----|
-| H1 | Aprobación automática | Legajo `1001` → fecha `2026-10-10` → días `3` → confirmar `s` | Mensaje de aprobación; saldo de 1001 pasa a **70** en `empleados.csv` | Sí, fila `estado=APROBADA` | Recomendado |
-| H2 | Pendiente de jefe (más de 7 días) | Legajo `1004` → fecha con ≥15 días desde hoy → días `8` → `s` | `PENDIENTE_APROBACION`; saldo de 1004 **sin cambiar** | Sí | Recomendado |
-| H3 | Pendiente de jefe (poca anticipación) | Legajo `1004` → fecha = hoy + 10 días → días `3` → `s` | `PENDIENTE_APROBACION` (anticipación &lt; 15 días) | Sí | Opcional |
+**Períodos bloqueados** (`data/blackout.csv`): del 2026-07-01 al 2026-07-15 (inventario general); del 2026-12-22 al 2027-01-05 (cierre de fin de año).
 
 ---
 
-## 2. Rechazos por reglas de negocio (después de confirmar `s`)
+## 2. Caminos de ejecución nominal (happy path)
 
-| ID | Escenario | Entrada / secuencia | Resultado esperado | ¿Persiste? | 📷 |
-|----|-----------|---------------------|--------------------|------------|-----|
-| R1 | Blackout | Legajo `1004` → `2026-07-05` → días `3` → `s` | `RECHAZADA_BLACKOUT`; motivo relacionado con inventario | Sí | Recomendado |
-| R2 | Sin saldo (legajo en cero) | Legajo `1003` → fecha válida lejana → días `1` → `s` | `RECHAZADA_FALTA_SALDO` | Sí | Recomendado |
-| R3 | Sin saldo (pide más de lo disponible) | Legajo `1002` (saldo 2) → fecha lejana → días `5` → `s` | `RECHAZADA_FALTA_SALDO` | Sí | Opcional |
+| ID  | Escenario                         | Secuencia de entrada                                      | Resultado esperado                                                                 | Registro en `solicitudes.csv` |
+| --- | --------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------------------------- |
+| H1  | Aprobación automática             | Legajo `1001` → fecha `2026-10-10` → días `3` → confirmar `s` | Mensaje de aprobación; saldo del legajo 1001 actualizado a **70** en `empleados.csv` | Sí (`APROBADA`)               |
+| H2  | Pendiente por cantidad de días    | Legajo `1004` → fecha con ≥15 días de anticipación → días `8` → `s` | Estado `PENDIENTE_APROBACION`; saldo del legajo 1004 sin modificación                | Sí                            |
+| H3  | Pendiente por poca anticipación   | Legajo `1004` → fecha = [FECHA_HOY_MAS_10_DIAS] → días `3` → `s` | Estado `PENDIENTE_APROBACION` (anticipación inferior a 15 días)                   | Sí                            |
 
----
+**Figura 1 — Evidencia de aprobación automática (caso H1)**  
+`[INSERTAR CAPTURA: salida de consola — caso H1]`
 
-## 3. Cancelaciones y no confirmación
-
-| ID | Escenario | Entrada / secuencia | Resultado esperado | ¿Persiste? | 📷 |
-|----|-----------|---------------------|--------------------|------------|-----|
-| C1 | Cancelar en legajo | Legajo: escribir `cancelar` | Mensaje de cancelación; fin sin fila nueva en CSV | No | Opcional |
-| C2 | Cancelar en fecha | Legajo válido → `cancelar` en fecha | Igual que C1 | No | — |
-| C3 | No confirmar resumen | Datos válidos → en resumen responder `n` | `CANCELADA`; motivo “No confirmó la solicitud” | Sí | Opcional |
-| C4 | Cancelar en resumen | Datos válidos → `cancelar` en confirmación | Tratado como no confirmación (`CANCELADA`) | Sí | — |
+**Figura 2 — Evidencia de solicitud pendiente de aprobación (caso H2 o H3)**  
+`[INSERTAR CAPTURA: salida de consola — caso H2 o H3]`
 
 ---
 
-## 4. Errores de entrada (camino infeliz por validación)
+## 3. Rechazos por reglas de negocio (posterior a la confirmación)
 
-| ID | Paso | Entrada incorrecta (ejemplo) | Comportamiento esperado | Tras 3 errores seguidos | 📷 |
-|----|------|------------------------------|-------------------------|-------------------------|-----|
-| E1 | Legajo | `abc` o `9999` | Mensaje de error; vuelve a pedir legajo | `CANCELADA` por intentos; **no** guarda en CSV | Opcional |
-| E2 | Fecha | `10-03-2026` o `ayer` | Pide formato AAAA-MM-DD | Igual | — |
-| E3 | Fecha pasada | Fecha anterior a hoy | “No puede ser anterior a hoy” | Igual | — |
-| E4 | Días | `0`, `-1`, `tres` | Pide entero &gt; 0 | Igual | — |
-| E5 | Confirmación | `si` o `x` (no es s/n) | Pide `s` o `n` | Si agota intentos: `CANCELADA` y **sí** guarda | — |
+| ID  | Escenario              | Secuencia de entrada                               | Resultado esperado                                      | Registro en CSV |
+| --- | ---------------------- | -------------------------------------------------- | ------------------------------------------------------- | --------------- |
+| R1  | Período de blackout    | Legajo `1004` → `2026-07-05` → días `3` → `s`      | `RECHAZADA_BLACKOUT`; motivo asociado al inventario     | Sí              |
+| R2  | Saldo nulo             | Legajo `1003` → fecha válida lejana → días `1` → `s` | `RECHAZADA_FALTA_SALDO`                                 | Sí              |
+| R3  | Saldo insuficiente     | Legajo `1002` → fecha lejana → días `5` → `s`      | `RECHAZADA_FALTA_SALDO` (saldo disponible: 2)           | Sí              |
 
----
+**Figura 3 — Evidencia de rechazo por blackout (caso R1)**  
+`[INSERTAR CAPTURA: salida de consola — caso R1]`
 
-## 5. Orden de prioridad de reglas (caso límite conceptual)
-
-| ID | Escenario | Nota | Resultado esperado |
-|----|-----------|------|--------------------|
-| P1 | Blackout + saldo insuficiente | Pedir fechas en julio con legajo `1003` y muchos días | **Primero** blackout → `RECHAZADA_BLACKOUT` (no evalúa saldo ni jefe) |
-| P2 | Saldo OK pero requiere jefe | Legajo `1001`, 8 días, fecha lejana | Pasa blackout y saldo → `PENDIENTE_APROBACION` |
+**Figura 4 — Evidencia de rechazo por saldo (caso R2)**  
+`[INSERTAR CAPTURA: salida de consola — caso R2]`
 
 ---
 
-## 6. Checklist de regresión rápida (antes del coloquio)
+## 4. Cancelaciones y no confirmación
 
-- [ ] H1 — Aprobación automática
-- [ ] H2 o H3 — Pendiente jefe
-- [ ] R1 — Blackout
-- [ ] R2 — Sin saldo
-- [ ] C1 o C3 — Cancelación
-- [ ] E1 — Tres intentos fallidos en legajo
-- [ ] Verificar que `data/solicitudes.csv` y `data/empleados.csv` reflejan lo esperado tras H1
+| ID  | Escenario              | Secuencia de entrada                          | Resultado esperado                                           | Registro en CSV |
+| --- | ---------------------- | --------------------------------------------- | ------------------------------------------------------------ | --------------- |
+| C1  | Cancelación en legajo  | Comando `cancelar` al solicitar legajo        | Finalización del proceso sin nueva fila en el historial      | No              |
+| C2  | Cancelación en fecha   | Legajo válido → `cancelar` al ingresar fecha  | Igual que C1                                                 | No              |
+| C3  | No confirmación        | Datos válidos → respuesta `n` en el resumen   | `CANCELADA`; motivo: no confirmación de la solicitud          | Sí              |
+| C4  | Cancelación en resumen | Datos válidos → `cancelar` en la confirmación | Equivalente a no confirmación (`CANCELADA`)                  | Sí              |
 
----
-
-## 7. Qué debés completar vos para el informe
-
-| Ítem | Acción |
-|------|--------|
-| Capturas 📷 | Al menos 4: H1, H2 o H3, R1, R2 (terminal con diálogo Jack) |
-| Fecha “hoy + 10 días” en H3 | Calculá la fecha al día de la demo y anotala en el PDF |
-| Tabla resumida en PDF | Copiar secciones 1–4 (podés acortar a 6–8 filas) |
-| Coloquio | Tener abierto `solicitudes.csv` y `empleados.csv` para mostrar persistencia tras H1 |
+**Figura 5 — Evidencia de cancelación o no confirmación (caso C1 o C3, opcional)**  
+`[INSERTAR CAPTURA: salida de consola — caso C1 o C3]`
 
 ---
 
-## 8. Plantilla para agregar tus propias pruebas
+## 5. Errores de entrada y límite de reintentos
 
-| ID | Escenario | Entrada | Resultado obtenido | ¿OK? | Observaciones |
-|----|-----------|---------|-------------------|------|---------------|
-| T1 | | | | ☐ | |
-| T2 | | | | ☐ | |
+| ID  | Etapa         | Entrada incorrecta (ejemplo) | Comportamiento esperado                          | Tras tres errores consecutivos      |
+| --- | ------------- | ---------------------------- | ------------------------------------------------ | ----------------------------------- |
+| E1  | Legajo        | `abc` o legajo inexistente   | Mensaje de error; nueva solicitud del dato       | `CANCELADA`; sin registro en CSV    |
+| E2  | Fecha         | Formato distinto de AAAA-MM-DD | Indicación del formato correcto                | Igual que E1                        |
+| E3  | Fecha         | Fecha anterior al día actual | Rechazo por fecha inválida                       | Igual que E1                        |
+| E4  | Días          | `0`, valor negativo o texto  | Solicitud de entero positivo                     | Igual que E1                        |
+| E5  | Confirmación  | Respuesta distinta de `s`/`n` | Solicitud de confirmación válida                 | `CANCELADA`; con registro si aplica |
+
+**Figura 6 — Evidencia de tratamiento de errores de entrada (caso E1)**  
+`[INSERTAR CAPTURA: salida de consola — tres intentos fallidos en legajo]`
+
+---
+
+## 6. Verificación del orden de prioridad de las compuertas
+
+| ID  | Escenario                         | Descripción                                                                 | Resultado esperado                                                                 |
+| --- | --------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| P1  | Blackout con saldo insuficiente   | Fechas en julio, legajo `1003`, cantidad de días elevada                    | Evaluación prioritaria de blackout → `RECHAZADA_BLACKOUT` (sin evaluar saldo)   |
+| P2  | Saldo suficiente con regla de jefe | Legajo `1001`, ocho días, fecha con anticipación adecuada                 | Supera blackout y saldo → `PENDIENTE_APROBACION`                                  |
+
+---
+
+## 7. Verificación de persistencia de datos
+
+Tras ejecutar el caso **H1**, se debe constatar:
+
+| Archivo              | Verificación esperada                                      |
+| -------------------- | ---------------------------------------------------------- |
+| `data/solicitudes.csv` | Nueva fila con `estado=APROBADA` y motivo de aprobación automática |
+| `data/empleados.csv`   | Saldo del legajo 1001 reducido en tres unidades            |
+
+**Figura 7 — Evidencia de persistencia (opcional)**  
+`[INSERTAR CAPTURA: contenido de solicitudes.csv y empleados.csv tras el caso H1]`
+
+---
+
+## 8. Registro de pruebas adicionales
+
+| ID  | Escenario | Entrada | Resultado obtenido | Conforme (Sí/No) | Observaciones |
+| --- | --------- | ------- | ----------------- | ---------------- | ------------- |
+| T1  |           |         |                   |                  |               |
+| T2  |           |         |                   |                  |               |
+
+---
+
+## 9. Elementos pendientes de incorporación al informe escrito
+
+| Elemento                              | Ubicación sugerida en el informe      |
+| ------------------------------------- | ------------------------------------- |
+| Figuras 1 a 4 (mínimo)                | Sección de pruebas y validación       |
+| Figura 6 (errores de entrada)         | Sección de caminos infelices          |
+| Valor de `[FECHA_HOY_MAS_10_DIAS]` en H3 | Nota al pie o tabla del caso H3    |
+| Tabla resumida (secciones 2 a 5)      | Anexo o cuerpo del informe (abreviada) |
