@@ -1,0 +1,30 @@
+# --- Uso personal (no publicar en GitHub) ---
+consignas.txt
+informe-manual-usuario.md
+informe-diccionario-datos.md
+textos-informe-pdf.md
+*.drawio
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# --- Entorno / IDE ---
+.env
+.env.*
+.vscode/
+.idea/
+.cursor/
+
+# --- Sistema operativo ---
+Thumbs.db
+Desktop.ini
+.DS_Store
