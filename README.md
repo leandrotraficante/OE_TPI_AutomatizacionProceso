@@ -2,7 +2,8 @@
 
 **Materia:** Organización Empresarial — UTN TUP (1.er año, 2026 1C)  
 **Alumno:** Leandro Traficante  
-**Proceso:** Gestión de solicitudes de vacaciones (simulación con chatbot en consola)
+**Proceso:** Gestión de solicitudes de vacaciones (simulación con chatbot en consola)  
+**Empresa ficticia:** QuanTech S.A.
 
 Bot en consola (**Jack**) que guía al empleado paso a paso, valida reglas de negocio y persiste los resultados en archivos CSV (base de datos simulada).
 
@@ -34,7 +35,7 @@ Si en la consola de Windows ves caracteres raros en lugar de tildes (por ejemplo
 
 ## Manual de usuario (uso del bot)
 
-1. El bot saluda y explica que podés escribir **`cancelar`** en cualquier momento para salir.
+1. El bot saluda y explica que podés escribir **`cancelar`** para abandonar el trámite.
 2. **Legajo:** número de empleado (ej. `1001`).
 3. **Fecha de inicio:** formato `AAAA-MM-DD` (ej. `2026-10-10`). No puede ser anterior a hoy.
 4. **Cantidad de días:** entero mayor a cero.
@@ -47,7 +48,8 @@ Si en la consola de Windows ves caracteres raros en lugar de tildes (por ejemplo
 | ------------------- | ------------------------------------------------------------------------- |
 | Confirmar solicitud | `s`                                                                       |
 | No confirmar        | `n`                                                                       |
-| Salir del proceso   | `cancelar` (en cualquier paso)                                            |
+| Salir antes del resumen | `cancelar` (sin fila en `solicitudes.csv`)                            |
+| Salir en el resumen | `cancelar` o `n` (registra `CANCELADA` en `solicitudes.csv`)              |
 | Errores repetidos   | Tras **3 intentos fallidos** en el mismo paso, el bot cierra la solicitud |
 
 ### Reglas de negocio
@@ -108,7 +110,7 @@ Ejemplo de rechazo por blackout: legajo `1004`, fecha `2026-07-05`, 3 días.
 
 ### Historial (`solicitudes.csv`)
 
-Cada solicitud confirmada o rechazada por reglas de negocio genera una fila con `id`, fechas, `estado` y `motivo`. Detalle de columnas: [docs/diccionario-datos.md](docs/diccionario-datos.md).
+Tras confirmar con `s`, cada cierre por reglas de negocio o con `n`/`cancelar` en el resumen genera una fila (`id`, fechas, `estado`, `motivo`). `cancelar` antes del resumen no agrega fila. Detalle: [docs/diccionario-datos.md](docs/diccionario-datos.md).
 
 ### Estados posibles en `solicitudes.csv`
 
@@ -128,7 +130,7 @@ Cada solicitud confirmada o rechazada por reglas de negocio genera una fila con 
 | ------------------------------------------------------ | ----------------------------------------------------------------- |
 | [docs/manual-usuario.md](docs/manual-usuario.md)       | Manual de usuario completo del bot                                |
 | [docs/diccionario-datos.md](docs/diccionario-datos.md) | Diccionario de datos (entidades, variables, estados)              |
-| [docs/pruebas-estres.md](docs/pruebas-estres.md)       | Pruebas de estrés y caminos infelices (tabla entrada → resultado) |
+| [docs/pruebas-estres.md](docs/pruebas-estres.md)       | Pruebas de estrés, caminos alternativos y capturas en `docs/img/test/` |
 
 ## Diagramas BPMN
 
@@ -164,10 +166,11 @@ Cada solicitud confirmada o rechazada por reglas de negocio genera una fila con 
 
 ---
 
-## Repositorio e informe
+## Repositorio
 
 - **GitHub:** https://github.com/leandrotraficante/OE_TPI_AutomatizacionProceso
-- **Informe PDF (TPI):** entregar en el aula virtual (Moodle) según indicaciones de cátedra (incluye capturas de pruebas e IA)
+
+El informe PDF del TPI (BPMN, pruebas, uso de IA) se entrega por el aula virtual de la materia.
 
 ---
 
